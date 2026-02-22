@@ -1,0 +1,167 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<title>Connected Greenhouse | IoT Project</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="assets/css/main.css" />
+	<noscript>
+		<link rel="stylesheet" href="assets/css/noscript.css" />
+	</noscript>
+</head>
+
+<body class="is-preload">
+
+	<!-- Wrapper -->
+	<div id="wrapper" class="divided">
+
+		<!-- Banner -->
+		<section
+			class="banner style1 orient-left content-align-left image-position-right fullscreen onload-image-fade-in onload-content-fade-right">
+			<div class="content">
+				<h1>Connected Greenhouse</h1>
+				<p>
+					A connected greenhouse prototype built with <strong>ESP32-S3 (Heltec WiFi LoRa 32 V3)</strong> and a
+					<strong>FreeRTOS multi-task firmware</strong>. The device reads environmental sensors, shows a local
+					UI
+					(OLED + rotary encoder), and enables <strong>remote monitoring and bidirectional control</strong>
+					through
+					<strong>MQTT → Node-RED → InfluxDB → Grafana</strong>.
+				</p>
+
+				<ul class="actions stacked">
+					<!-- Replace the repo link once you push the code -->
+					<li><a href="https://github.com/sajukhakurel074/Connected_GreenHouse_IOT" target="_blank"
+							class="button primary">GitHub Repo</a></li>
+					<li><a href="https://sajukhakurel074.github.io/" class="button">Back to Home</a></li>
+				</ul>
+			</div>
+
+			<div class="image">
+				<img src="images/greenhouse_cover.jpg" alt="Connected Greenhouse cover" />
+			</div>
+		</section>
+
+		<!-- System Summary -->
+		<section class="spotlight style1 orient-right content-align-left image-position-center onscroll-image-fade-in"
+			id="first">
+			<div class="content">
+				<h2>System Summary</h2>
+				<p>
+					The greenhouse continuously measures temperature, humidity, and light intensity and streams
+					telemetry to
+					the cloud. It also receives tuning commands remotely (setpoints, ranges, hysteresis, persistence)
+					and
+					applies them safely to the local control behavior.
+				</p>
+
+				<ul>
+					<li><strong>Sensors:</strong> SHT31 (temperature/humidity), BH1750 (lux) via I²C</li>
+					<li><strong>Local UI:</strong> OLED status + menu navigation with rotary encoder</li>
+					<li><strong>Remote monitoring:</strong> MQTT → Node-RED → InfluxDB → Grafana dashboards</li>
+					<li><strong>Remote control:</strong> bidirectional configuration updates via MQTT</li>
+				</ul>
+			</div>
+
+			<div class="image">
+				<img src="images/greenhouse_device.jpg" alt="Prototype device photo" />
+			</div>
+		</section>
+
+		<!-- Firmware Architecture -->
+		<section class="spotlight style1 orient-left content-align-left image-position-center onscroll-image-fade-in">
+			<div class="content">
+				<h2>Firmware Architecture (FreeRTOS)</h2>
+				<p>
+					The firmware is structured as independent FreeRTOS tasks rather than a single main loop. To keep the
+					system deterministic and merge-friendly in a team environment, tasks communicate using
+					<strong>queue-based structured messages</strong> instead of sharing global variables directly.
+				</p>
+
+				<ul>
+					<li><strong>Sensors Task:</strong> reads I²C sensors, publishes environment data</li>
+					<li><strong>Display/UI Task:</strong> renders OLED UI, handles encoder input</li>
+					<li><strong>Logic Task:</strong> applies rules based on setpoints + hysteresis + persistence</li>
+					<li><strong>MQTT/Radio Task:</strong> publishes telemetry and receives configuration commands</li>
+				</ul>
+
+				<div class="box">
+					<strong>High-level data flow</strong>
+					<ul style="margin-top:0.75rem;">
+						<li>Sensors Task → <em>Environment Queue</em> → Display Task + Logic Task</li>
+						<li>MQTT Task → <em>Config Queue</em> → Logic Task (+ UI updates)</li>
+						<li>MQTT → Node-RED → InfluxDB → Grafana</li>
+					</ul>
+				</div>
+			</div>
+
+			<div class="image">
+				<img src="images/greenhouse_architecture.jpg" alt="Software architecture figure" />
+			</div>
+		</section>
+
+		<!-- Integration & Challenges -->
+		<section class="spotlight style1 orient-right content-align-left image-position-center onscroll-image-fade-in">
+			<div class="content">
+				<h2>Integration Challenges</h2>
+				<p>
+					A major part of this project was real-world integration across modules and teammates.
+					Common issues included I²C/library conflicts, timing/latency between tasks, and Git merge conflicts
+					when
+					components evolved in parallel. The queue-based architecture reduced race conditions and helped keep
+					module interfaces clean.
+				</p>
+
+				<ul>
+					<li>I²C stability and library compatibility during integration</li>
+					<li>Task timing coordination (sampling, UI refresh, MQTT latency)</li>
+					<li>Team merges: interface mismatches and conflict resolution</li>
+				</ul>
+			</div>
+
+			<div class="image">
+				<img src="images/greenhouse_grafana.jpg" alt="Grafana dashboard screenshot" />
+			</div>
+		</section>
+
+		<!-- Tech Stack -->
+		<section class="wrapper style1 align-center">
+			<div class="inner">
+				<h2>Tech Stack</h2>
+
+				<div class="items style1 medium onscroll-fade-in">
+					<section>
+						<h3>Embedded</h3>
+						<p>ESP32-S3 (Heltec WiFi LoRa 32 V3), C/C++, FreeRTOS, GPIO, I²C</p>
+					</section>
+					<section>
+						<h3>Sensors & UI</h3>
+						<p>SHT31, BH1750, OLED display, rotary encoder</p>
+					</section>
+					<section>
+						<h3>Cloud & Monitoring</h3>
+						<p>MQTT, Node-RED, InfluxDB, Grafana dashboards</p>
+					</section>
+				</div>
+
+				<ul class="actions stacked">
+					<li><a href="https://sajukhakurel074.github.io/" class="button">Back to Home</a></li>
+				</ul>
+			</div>
+		</section>
+
+	</div>
+
+	<!-- Scripts -->
+	<script src="assets/js/jquery.min.js"></script>
+	<script src="assets/js/jquery.scrollex.min.js"></script>
+	<script src="assets/js/jquery.scrolly.min.js"></script>
+	<script src="assets/js/browser.min.js"></script>
+	<script src="assets/js/breakpoints.min.js"></script>
+	<script src="assets/js/util.js"></script>
+	<script src="assets/js/main.js"></script>
+
+</body>
+
+</html>
