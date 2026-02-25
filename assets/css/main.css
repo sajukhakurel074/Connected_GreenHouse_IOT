@@ -8601,3 +8601,41 @@ input, select, textarea {
 			#wrapper.divided > .invert:first-child {
 				box-shadow: none !important;
 			}
+
+
+			/* ============================
+   Custom Overrides (Saju)
+   Add this at the VERY END of main.css
+   ============================ */
+
+/* Remove the default gray image background used by the template */
+.banner .image,
+.spotlight .image {
+  background-color: transparent !important;
+}
+
+/* Utility: show full image without cropping (good for charts, screenshots) */
+.image.fit-contain {
+  background: transparent !important;
+}
+
+.image.fit-contain img {
+  object-fit: contain !important;
+  object-position: center !important;
+  background: transparent !important;
+}
+
+/* Utility: wide diagrams -> horizontal scroll (best readability) */
+.image.image-scroll-x {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.image.image-scroll-x img {
+  position: relative !important;
+  height: auto !important;
+  width: max-content !important;
+  max-width: none !important;
+  display: block;
+}

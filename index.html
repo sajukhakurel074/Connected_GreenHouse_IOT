@@ -5,9 +5,11 @@
 	<title>Connected Greenhouse | IoT Project</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-	<link rel="stylesheet" href="assets/css/main.css" />
+
+	<!-- Cache-bust the CSS like you did before -->
+	<link rel="stylesheet" href="assets/css/main.css?v=1" />
 	<noscript>
-		<link rel="stylesheet" href="assets/css/noscript.css" />
+		<link rel="stylesheet" href="assets/css/noscript.css?v=1" />
 	</noscript>
 </head>
 
@@ -21,25 +23,46 @@
 			class="banner style1 orient-left content-align-left image-position-right fullscreen onload-image-fade-in onload-content-fade-right">
 			<div class="content">
 				<h1>Connected Greenhouse</h1>
+
 				<p>
 					A connected greenhouse prototype built with <strong>ESP32-S3 (Heltec WiFi LoRa 32 V3)</strong> and a
-					<strong>FreeRTOS multi-task firmware</strong>. The device reads environmental sensors, shows a local
-					UI
+					<strong>FreeRTOS multi-task firmware</strong>. The device reads environmental sensors, provides a
+					local UI
 					(OLED + rotary encoder), and enables <strong>remote monitoring and bidirectional control</strong>
 					through
 					<strong>MQTT → Node-RED → InfluxDB → Grafana</strong>.
 				</p>
 
+				<p style="margin-top: 1rem;">
+					Team project (Université d’Orléans). I primarily contributed to integration and system bring-up,
+					including
+					firmware architecture alignment across modules and end-to-end validation.
+				</p>
+				<p style="margin-top: 1rem;">
+					<strong>Supervisor:</strong> Prof. Rémy Beaudenon (Université d’Orléans)
+				</p>
+
+				<p style="margin-top: 0.5rem;">
+					<strong>Team Members:</strong>
+					Aya Chatit, Jose Guillermo Cruz Garcia, Joseph Mendez,
+					Noah Chau, Pratik Khadka, Vincent Mwenda Mworia
+				</p>
 				<ul class="actions stacked">
-					<!-- Replace the repo link once you push the code -->
-					<li><a href="https://github.com/sajukhakurel074/Connected_GreenHouse_IOT" target="_blank"
-							class="button primary">GitHub Repo</a></li>
-					<li><a href="https://sajukhakurel074.github.io/" class="button">Back to Home</a></li>
+					<li>
+						<a href="https://github.com/sajukhakurel074/GreenHouse_IOT" target="_blank"
+							class="button primary">GitHub Repo</a>
+					</li>
+					<li>
+						<a href="Connected%20GreenHouse%20IOT%20Report.pdf" target="_blank" class="button">
+							View Full Project Report
+						</a>
+					</li>
 				</ul>
 			</div>
 
-			<div class="image">
-				<img src="images/greenhouse_cover.jpg" alt="Connected Greenhouse cover" />
+			<!-- Use fit-contain for banner images to avoid cropping + gray background -->
+			<div class="image fit-contain">
+				<img src="images/image2.png" alt="Connected Greenhouse cover" />
 			</div>
 		</section>
 
@@ -49,80 +72,133 @@
 			<div class="content">
 				<h2>System Summary</h2>
 				<p>
-					The greenhouse continuously measures temperature, humidity, and light intensity and streams
-					telemetry to
-					the cloud. It also receives tuning commands remotely (setpoints, ranges, hysteresis, persistence)
-					and
-					applies them safely to the local control behavior.
+					The greenhouse continuously measures <strong>temperature</strong>, <strong>humidity</strong>, and
+					<strong>light intensity</strong> and streams telemetry remotely. It also receives configuration
+					commands
+					(setpoints, ranges, hysteresis, persistence) and applies them safely to local control logic.
 				</p>
 
 				<ul>
 					<li><strong>Sensors:</strong> SHT31 (temperature/humidity), BH1750 (lux) via I²C</li>
-					<li><strong>Local UI:</strong> OLED status + menu navigation with rotary encoder</li>
-					<li><strong>Remote monitoring:</strong> MQTT → Node-RED → InfluxDB → Grafana dashboards</li>
-					<li><strong>Remote control:</strong> bidirectional configuration updates via MQTT</li>
+					<li><strong>Local UI:</strong> OLED status + menu navigation using rotary encoder</li>
+					<li><strong>Remote monitoring:</strong> MQTT → Node-RED → InfluxDB → Grafana</li>
+					<li><strong>Remote control:</strong> Bidirectional configuration updates via MQTT</li>
 				</ul>
 			</div>
 
-			<div class="image">
-				<img src="images/greenhouse_device.jpg" alt="Prototype device photo" />
+			<div class="image fit-contain">
+				<img src="images/image3.png" alt="Prototype device photo" />
 			</div>
 		</section>
 
-		<!-- Firmware Architecture -->
+		<!-- Architecture diagram (WIDE) -->
 		<section class="spotlight style1 orient-left content-align-left image-position-center onscroll-image-fade-in">
 			<div class="content">
-				<h2>Firmware Architecture (FreeRTOS)</h2>
+				<h2>Software + System Architecture</h2>
 				<p>
-					The firmware is structured as independent FreeRTOS tasks rather than a single main loop. To keep the
-					system deterministic and merge-friendly in a team environment, tasks communicate using
-					<strong>queue-based structured messages</strong> instead of sharing global variables directly.
+					The embedded firmware is split into FreeRTOS tasks (sensing, UI, logic, networking). A queue-based
+					design
+					keeps interfaces clean and reduces coupling during team development and integration.
 				</p>
 
 				<ul>
-					<li><strong>Sensors Task:</strong> reads I²C sensors, publishes environment data</li>
-					<li><strong>Display/UI Task:</strong> renders OLED UI, handles encoder input</li>
-					<li><strong>Logic Task:</strong> applies rules based on setpoints + hysteresis + persistence</li>
-					<li><strong>MQTT/Radio Task:</strong> publishes telemetry and receives configuration commands</li>
+					<li><strong>Queue-first communication:</strong> structured messages instead of shared globals</li>
+					<li><strong>Deterministic behavior:</strong> sampling / UI refresh / publish periods kept
+						predictable</li>
+					<li><strong>Remote pipeline:</strong> MQTT topics map cleanly to dashboard + control variables</li>
 				</ul>
 
 				<div class="box">
 					<strong>High-level data flow</strong>
 					<ul style="margin-top:0.75rem;">
-						<li>Sensors Task → <em>Environment Queue</em> → Display Task + Logic Task</li>
-						<li>MQTT Task → <em>Config Queue</em> → Logic Task (+ UI updates)</li>
+						<li>Sensors Task → Environment Queue → Display Task + Logic Task</li>
+						<li>MQTT Task → Config Queue → Logic Task (+ UI updates)</li>
 						<li>MQTT → Node-RED → InfluxDB → Grafana</li>
 					</ul>
 				</div>
 			</div>
 
-			<div class="image">
-				<img src="images/greenhouse_architecture.jpg" alt="Software architecture figure" />
+			<!-- For wide diagrams: horizontal scroll (best readability) -->
+			<div class="image fit-contain">
+				<img src="images/image1.png" alt="Architecture diagram" />
 			</div>
 		</section>
 
-		<!-- Integration & Challenges -->
+		<!-- Firmware Tasks -->
 		<section class="spotlight style1 orient-right content-align-left image-position-center onscroll-image-fade-in">
 			<div class="content">
-				<h2>Integration Challenges</h2>
+				<h2>Firmware Architecture (FreeRTOS Tasks)</h2>
 				<p>
-					A major part of this project was real-world integration across modules and teammates.
-					Common issues included I²C/library conflicts, timing/latency between tasks, and Git merge conflicts
-					when
-					components evolved in parallel. The queue-based architecture reduced race conditions and helped keep
-					module interfaces clean.
+					The firmware is structured as independent tasks rather than a single loop. Each task owns its timing
+					and
+					responsibility, while queues provide safe, testable interfaces between modules.
 				</p>
 
 				<ul>
-					<li>I²C stability and library compatibility during integration</li>
-					<li>Task timing coordination (sampling, UI refresh, MQTT latency)</li>
-					<li>Team merges: interface mismatches and conflict resolution</li>
+					<li><strong>Sensors Task:</strong> reads I²C sensors; publishes environment payloads</li>
+					<li><strong>Display/UI Task:</strong> OLED rendering + rotary encoder menus</li>
+					<li><strong>Logic Task:</strong> applies setpoints / hysteresis / persistence; controls actuators
+					</li>
+					<li><strong>MQTT Task:</strong> publishes telemetry and receives config commands</li>
+				</ul>
+			</div>
+		</section>
+
+		<!-- Remote Stack -->
+		<section class="spotlight style1 orient-left content-align-left image-position-center onscroll-image-fade-in">
+			<div class="content">
+				<h2>Remote Monitoring & Control</h2>
+				<p>
+					Telemetry is published to MQTT topics and processed in Node-RED for routing and transformation.
+					InfluxDB stores time-series data, and Grafana visualizes dashboards. Configuration commands are
+					sent
+					back
+					through MQTT to update control parameters on the device.
+				</p>
+
+				<ul>
+					<li><strong>MQTT topics:</strong> telemetry + config (bidirectional)</li>
+					<li><strong>Node-RED:</strong> parsing, routing, and control flows</li>
+					<li><strong>InfluxDB:</strong> time-series storage</li>
+					<li><strong>Grafana:</strong> dashboards, trends, thresholds</li>
 				</ul>
 			</div>
 
-			<div class="image">
-				<img src="images/greenhouse_grafana.jpg" alt="Grafana dashboard screenshot" />
+			<div class="image fit-contain">
+				<img src="images/image4.png" alt="Grafana dashboard screenshot" />
 			</div>
+		</section>
+
+		<!-- Integration Challenges -->
+		<section class="spotlight style1 orient-right content-align-left image-position-center onscroll-image-fade-in">
+			<div class="content">
+				<h2>Integration Challenges & Lessons</h2>
+				<p>
+					The biggest engineering work was integration: combining independently-developed modules and
+					making
+					the
+					system stable end-to-end. The most common real issues were I²C conflicts (shared bus between
+					display
+					and
+					sensors), task timing interactions, and interface mismatches during merges.
+				</p>
+
+				<ul>
+					<li><strong>I²C integration:</strong> display + sensors working alone but conflicting together
+						(addressing, init order, bus speed)</li>
+					<li><strong>Timing:</strong> sampling vs UI refresh vs MQTT publish rate trade-offs</li>
+					<li><strong>Merging:</strong> resolving conflicts by enforcing clean module boundaries + message
+						schemas</li>
+				</ul>
+
+				<div class="box">
+					<strong>What worked well:</strong> queue-based interfaces + clear “who owns what data” rules
+					made
+					debugging
+					and integration much faster.
+				</div>
+			</div>
+
 		</section>
 
 		<!-- Tech Stack -->
